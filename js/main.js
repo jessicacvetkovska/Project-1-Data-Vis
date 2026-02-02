@@ -18,13 +18,13 @@ d3.csv('data/contraceptiveprevalence.csv')
   	});
 	const filteredData = Object.values(latest);
 	console.log(filteredData);
-	
-  	// // Create an instance (for example in main.js)
-	// 	timelineCircles = new TimelineCircles({
-	// 		'parentElement': '#timeline',
-	// 		'containerHeight': 1100,
-	// 		'containerWidth': 1000
-	// 	}, data);
+
+  	// Create an instance (for example in main.js)
+	histogramcontraceptives = new HistogramContraceptives({
+		'parentElement': '#histogramcontraceptives',
+		'containerHeight': 500,
+		'containerWidth': 500
+	}, filteredData);
 })
 .catch(error => {
     console.error('Error:');
@@ -50,11 +50,11 @@ d3.csv('data/literacyrates.csv')
 	console.log(filteredData);
 
   	// // Create an instance (for example in main.js)
-	// 	timelineCircles = new TimelineCircles({
-	// 		'parentElement': '#timeline',
-	// 		'containerHeight': 1100,
-	// 		'containerWidth': 1000
-	// 	}, data);
+	// histogramliteracyrates = new HistogramLiteracyRates({
+	// 	'parentElement': '#histogramliteracyrates',
+	// 	'containerHeight': 1100,
+	// 	'containerWidth': 1000
+	// }, filteredData);
 })
 .catch(error => {
     console.error('Error:');
