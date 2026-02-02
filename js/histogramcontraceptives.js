@@ -60,6 +60,21 @@ class HistogramContraceptives {
             .attr('class', 'axis y-axis')
             .call(vis.yAxis);
         
+        // Add X axis label:
+        vis.chart.append("text")
+            .attr("text-anchor", "end")
+            .attr("x", vis.width)
+            .attr("y", vis.height + vis.config.margin.top + 20)
+            .text("Frequency of Contraceptive Prevalence (%)");
+
+        // Y axis label:
+        vis.chart.append("text")
+            .attr("text-anchor", "end")
+            .attr("transform", "rotate(-90)")
+            .attr("y", -vis.config.margin.left+20)
+            .attr("x", -vis.config.margin.top)
+            .text("Number of Countries")
+        
         vis.rect = vis.chart.selectAll('rect')
             .data(bins)
             .join("rect")
