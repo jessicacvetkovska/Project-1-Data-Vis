@@ -8,14 +8,14 @@ d3.csv('data/contraceptiveprevalence.csv')
     console.log(data_contraceptive);
 
     // //process the data - this is a forEach function.  You could also do a regular for loop.... 
-    // data.forEach(d => { //ARROW function - for each object in the array, pass it as a parameter to this function
-    //   	d.cost = +d.cost; // convert string 'cost' to number
+    data_contraceptive.forEach(d => { //ARROW function - for each object in the array, pass it as a parameter to this function
+      	d.prevalence = +d.prevalence; // convert string 'prevalence' to number
     //   	d.daysFromYrStart = computeDays(d.start); //note- I just created this field in each object in the array on the fly
 
 	// 			let tokens = d.start.split("-");
   	// 		d.year = +tokens[0];
 
-  	// });
+  	});
 
   	// // Create an instance (for example in main.js)
 	// 	timelineCircles = new TimelineCircles({
@@ -36,14 +36,14 @@ d3.csv('data/literacyrates.csv')
     console.log(data_literacyrate);
 
     // //process the data - this is a forEach function.  You could also do a regular for loop.... 
-    // data.forEach(d => { //ARROW function - for each object in the array, pass it as a parameter to this function
-    //   	d.cost = +d.cost; // convert string 'cost' to number
+    data_literacyrate.forEach(d => { //ARROW function - for each object in the array, pass it as a parameter to this function
+      	d.literacyrate = +d.literacyrate; // convert string 'literacyrate' to number
     //   	d.daysFromYrStart = computeDays(d.start); //note- I just created this field in each object in the array on the fly
 
 	// 			let tokens = d.start.split("-");
   	// 		d.year = +tokens[0];
 
-  	// });
+  	});
 
   	// // Create an instance (for example in main.js)
 	// 	timelineCircles = new TimelineCircles({
