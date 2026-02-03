@@ -49,12 +49,12 @@ d3.csv('data/literacyrates.csv')
 	const filteredData = Object.values(latest);
 	console.log(filteredData);
 
-  	// // Create an instance (for example in main.js)
-	// histogramliteracyrates = new HistogramLiteracyRates({
-	// 	'parentElement': '#histogramliteracyrates',
-	// 	'containerHeight': 1100,
-	// 	'containerWidth': 1000
-	// }, filteredData);
+  	// Create an instance (for example in main.js)
+	histogramliteracyrates = new HistogramLiteracyRates({
+		'parentElement': '#histogramliteracyrates',
+		'containerHeight': 500,
+		'containerWidth': 500
+	}, filteredData);
 })
 .catch(error => {
     console.error('Error:');
