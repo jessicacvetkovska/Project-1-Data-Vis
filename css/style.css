@@ -1,3 +1,26 @@
+/* SVG Display */
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.histograms-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.scatterplot-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+svg {
+  margin: 20px 0;
+}
+
 /* Tooltip */
 #tooltip {
   position: absolute;
