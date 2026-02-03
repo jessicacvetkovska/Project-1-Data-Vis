@@ -4,7 +4,7 @@ class HistogramContraceptives {
             parentElement: _config.parentElement,
             containerWidth: _config.containerWidth || 400,
             containerHeight: _config.containerHeight || 100,
-            margin: {top: 40, right: 50, bottom: 20, left: 50},
+            margin: {top: 40, right: 50, bottom: 50, left: 50},
             tooltipPadding: _config.tooltipPadding || 15
         }
         this.data = _data; 
@@ -29,6 +29,14 @@ class HistogramContraceptives {
 
         vis.chart = vis.svg.append('g')
             .attr('transform', `translate(${vis.config.margin.left}, ${vis.config.margin.top})`);
+        
+        vis.chart.append("text")
+            .attr("x", (vis.width / 2)) // Position the text in the middle horizontally
+            .attr("y", 0 - (vis.config.margin.top / 2)) // Position it above the top margin
+            .attr("text-anchor", "middle") // Ensure the text is centered at the specified x,y
+            .style("font-size", "16px") // Set styling as needed
+            .style("text-decoration", "underline") // Add text decoration
+            .text("Percent of Contraceptive Prevalence in Women vs Number of Countries"); // Set the actual text of the title
 
         // Initialize linear and ordinal scales (input domain and output range)
         vis.xScale = d3.scaleLinear()
@@ -57,23 +65,23 @@ class HistogramContraceptives {
             .call(vis.xAxis);
 
         vis.yAxisGroup = vis.chart.append('g')
-            .attr('class', 'axis y-axis')
+            .attr("transform", `translate(0, 0)`) 
             .call(vis.yAxis);
         
         // Add X axis label:
         vis.chart.append("text")
-            .attr("text-anchor", "end")
-            .attr("x", vis.width)
-            .attr("y", vis.height + vis.config.margin.top + 20)
+            .attr("text-anchor", "middle")
+            .attr("x", vis.width / 2)
+            .attr("y", vis.height + vis.config.margin.bottom / 2 + 15)
             .text("Frequency of Contraceptive Prevalence (%)");
 
         // Y axis label:
         vis.chart.append("text")
-            .attr("text-anchor", "end")
+            .attr("text-anchor", "middle")
             .attr("transform", "rotate(-90)")
-            .attr("y", -vis.config.margin.left+20)
-            .attr("x", -vis.config.margin.top)
-            .text("Number of Countries")
+            .attr("y", -vis.config.margin.left + 15)
+            .attr("x", -(vis.height / 2))
+            .text("Number of Countries");
         
         vis.rect = vis.chart.selectAll('rect')
             .data(bins)
