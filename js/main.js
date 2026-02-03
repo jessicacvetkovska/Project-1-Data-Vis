@@ -6,23 +6,25 @@ d3.csv('data/contraceptiveprevalence.csv')
   	console.log('Data loading of contraceptive prevalence complete. Work with dataset.');
   	data_contraceptive = _data;
     console.log(data_contraceptive);
+	const latest = {};
 
     // //process the data - this is a forEach function.  You could also do a regular for loop.... 
-    // data.forEach(d => { //ARROW function - for each object in the array, pass it as a parameter to this function
-    //   	d.cost = +d.cost; // convert string 'cost' to number
-    //   	d.daysFromYrStart = computeDays(d.start); //note- I just created this field in each object in the array on the fly
+    data_contraceptive.forEach(d => { //ARROW function - for each object in the array, pass it as a parameter to this function
+		d.Prevalence = +d.Prevalence; // convert string 'prevalence' to number
+		const year = +d.Year;
+		if (!latest[d.Entity] || year > latest[d.Entity].Year) {
+			latest[d.Entity] = {...d, Year: year};
+		}
+  	});
+	const filteredData = Object.values(latest);
+	console.log(filteredData);
 
-	// 			let tokens = d.start.split("-");
-  	// 		d.year = +tokens[0];
-
-  	// });
-
-  	// // Create an instance (for example in main.js)
-	// 	timelineCircles = new TimelineCircles({
-	// 		'parentElement': '#timeline',
-	// 		'containerHeight': 1100,
-	// 		'containerWidth': 1000
-	// 	}, data);
+  	// Create an instance (for example in main.js)
+	histogramcontraceptives = new HistogramContraceptives({
+		'parentElement': '#histogramcontraceptives',
+		'containerHeight': 500,
+		'containerWidth': 500
+	}, filteredData);
 })
 .catch(error => {
     console.error('Error:');
@@ -34,23 +36,25 @@ d3.csv('data/literacyrates.csv')
   	console.log('Data loading of literacy rates complete. Work with dataset.');
   	data_literacyrate = _data;
     console.log(data_literacyrate);
+	const latest = {};
 
     // //process the data - this is a forEach function.  You could also do a regular for loop.... 
-    // data.forEach(d => { //ARROW function - for each object in the array, pass it as a parameter to this function
-    //   	d.cost = +d.cost; // convert string 'cost' to number
-    //   	d.daysFromYrStart = computeDays(d.start); //note- I just created this field in each object in the array on the fly
-
-	// 			let tokens = d.start.split("-");
-  	// 		d.year = +tokens[0];
-
-  	// });
+    data_literacyrate.forEach(d => { //ARROW function - for each object in the array, pass it as a parameter to this function
+		d.LiteracyRate = +d.LiteracyRate; // convert string 'literacyrate' to number
+		const year = +d.Year;
+		if (!latest[d.Entity] || year > latest[d.Entity].Year) {
+			latest[d.Entity] = {...d, Year: year};
+		}
+  	});
+	const filteredData = Object.values(latest);
+	console.log(filteredData);
 
   	// // Create an instance (for example in main.js)
-	// 	timelineCircles = new TimelineCircles({
-	// 		'parentElement': '#timeline',
-	// 		'containerHeight': 1100,
-	// 		'containerWidth': 1000
-	// 	}, data);
+	// histogramliteracyrates = new HistogramLiteracyRates({
+	// 	'parentElement': '#histogramliteracyrates',
+	// 	'containerHeight': 1100,
+	// 	'containerWidth': 1000
+	// }, filteredData);
 })
 .catch(error => {
     console.error('Error:');
