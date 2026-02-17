@@ -8,12 +8,12 @@ class litrateChoroplethMap {
   constructor(_config, _data) {
     this.config = {
       parentElement: _config.parentElement,
-      containerWidth: _config.containerWidth || 500,
-      containerHeight: _config.containerHeight || 400,
-      margin: _config.margin || {top: 0, right: 0, bottom: 0, left: 0},
+      containerWidth: _config.containerWidth || 900,
+      containerHeight: _config.containerHeight || 600,
+      margin: _config.margin || {top: 10, right: 10, bottom: 10, left: 10},
       tooltipPadding: 10,
-      legendBottom: 50,
-      legendLeft: 50,
+      legendBottom: 20,
+      legendLeft: 20,
       legendRectHeight: 12, 
       legendRectWidth: 150
     }
@@ -75,7 +75,7 @@ class litrateChoroplethMap {
   updateVis() {
     let vis = this;
 
-    const litrateDensityExtent = d3.extent(vis.data.objects.collection.geometries, d => d.properties.literacyrate);
+    const litrateDensityExtent = d3.extent(vis.data.features.filter(d => d.literacyrate != null), d => d.literacyrate);
     
     // Update color scale
     vis.colorScale.domain(litrateDensityExtent);
@@ -93,8 +93,8 @@ class litrateChoroplethMap {
   renderVis() {
     let vis = this;
 
-    // Convert compressed TopoJSON to GeoJSON format
-    const countries = topojson.feature(vis.data, vis.data.objects.collection)
+    // Use GeoJSON directly (no TopoJSON conversion needed)
+    const countries = vis.data;
 
     // Defines the scale of the projection so that the geometry fits within the SVG area
     vis.projection.fitSize([vis.width, vis.height], countries);
@@ -106,22 +106,22 @@ class litrateChoroplethMap {
         .attr('class', 'country')
         .attr('d', vis.geoPath)
         .attr('fill', d => {
-          if (d.properties.litrate) {
-            return vis.colorScale(d.properties.litrate);
+          if (d.literacyrate) {
+            return vis.colorScale(d.literacyrate);
           } else {
-            return 'url(#lightstripe)';
+            return '#e0e0e0';
           }
         });
 
     countryPath
         .on('mousemove', (event,d) => {
-          const litRate = d.properties.litrate ? `<strong>${d.properties.litrate}</strong> literacy rate density per nation` : 'No data available'; 
+          const litRate = d.literacyrate ? `<strong>${d.literacyrate}</strong> literacy rate` : 'No data available'; 
           d3.select('#tooltip')
             .style('display', 'block')
             .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
             .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
             .html(`
-              <div class="tooltip-title">${d.properties.name}</div>
+              <div class="tooltip-title">${d.id}</div>
               <div>${litRate}</div>
             `);
         })

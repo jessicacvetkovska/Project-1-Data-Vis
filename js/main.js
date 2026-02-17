@@ -42,7 +42,7 @@ const literacyPromise = d3.csv('data/literacyrates.csv')
     console.log(data_literacyrate);
 	const latest = {};
 
-    // //process the data - this is a forEach function.  You could also do a regular for loop.... 
+    //process the data - this is a forEach function.  You could also do a regular for loop.... 
     data_literacyrate.forEach(d => { //ARROW function - for each object in the array, pass it as a parameter to this function
 		d.LiteracyRate = +d.LiteracyRate; // convert string 'literacyrate' to number
 		const year = +d.Year;
@@ -91,51 +91,80 @@ Promise.all([contraceptivePromise, literacyPromise])
     }, combinedData);
 
 	return contraceptiveFilteredData, litrateFilteredData;
-  })
-  .catch(error => {
+})
+.catch(error => {
     console.error('Error combining datasets:', error);
-  });
+});
 
+// contraceptive choropleth map
 Promise.all([
 	d3.json('data/world.geojson'),
 	contraceptivePromise
 ]).then(data => {
+	console.log('Contra choro data loaded!')
 	const geoData = data[0];
-	const countryData = contraceptiveFilteredData;
+	let countryData = data[1];
+	countryData = countryData.filter(d => d.Code !== '' && d.Entity !== 'World').sort((a, b) => a.Code.localeCompare(b.Code)); // filter out entries without country code and world data, then sort by code
+	console.log('CountryData: ', countryData);
+	const latest = {};
+
+	//process the data - this is a forEach function.  You could also do a regular for loop.... 
+    countryData.forEach(d => { //ARROW function - for each object in the array, pass it as a parameter to this function
+		d.Prevalence = +d.Prevalence; // convert string 'prevalence' to number
+		const year = +d.Year;
+		if (!latest[d.Entity] || year > latest[d.Entity].Year) {
+			latest[d.Entity] = {...d, Year: year};
+		}
+  	});
 
 	// Combine both datasets by adding the contraceptive data to the GeoJSON file
-	geoData.objects.collection.geometries.forEach(d => {
-    	for (let i = 0; i < countryData.length; i++) {
-      		if (d.properties.id == countryData[i].Code) {
-        		d.properties.contraceptiveprevalence = +countryData[i].Prevalence;
-      		}
+	geoData.features.forEach(feature => {
+    	const countryMatch = countryData.find(d => d.Code === feature.id);
+    	if (countryMatch) {
+      		feature.contraceptiveprevalence = +countryMatch.Prevalence;
     	}
   	});
 
-  	const contraceptiveChoroplethMap = new contraceptiveChoroplethMap({ 
-    	parentElement: '#map'
+  	choroplethcontraceptives = new ChoroplethContraceptives({ 
+    	parentElement: '#choroplethcontraceptives',
+		containerHeight: 500,
+		containerWidth: 500
   	}, geoData);
 })
 .catch(error => console.error('Error with contraceptive choropleth map:', error));
 
+
+// litrate choropleth map
 Promise.all([
 	d3.json('data/world.geojson'),
 	literacyPromise
 ]).then(data => {
 	const geoData = data[0];
-	const countryData = litrateFilteredData;
+	let countryData = data[1];
+	countryData = countryData.filter(d => d.Code !== '' && !d.Code.startsWith('OWID')).sort((a, b) => a.Code.localeCompare(b.Code)); // filter out entries without country code, world data, and OWID codes, then sort by code
+	const latest = {};
 
-	// Combine both datasets by adding the population density to the TopoJSON file
-	geoData.objects.collection.geometries.forEach(d => {
-    	for (let i = 0; i < countryData.length; i++) {
-      		if (d.properties.id == countryData[i].code) {
-        		d.properties.literacyrate = +countryData[i].LiteracyRate;
-      		}
+	//process the data - this is a forEach function.  You could also do a regular for loop.... 
+    countryData.forEach(d => { //ARROW function - for each object in the array, pass it as a parameter to this function
+		d.LiteracyRate = +d.LiteracyRate; // convert string 'literacyrate' to number
+		const year = +d.Year;
+		if (!latest[d.Entity] || year > latest[d.Entity].Year) {
+			latest[d.Entity] = {...d, Year: year};
+		}
+  	});
+
+	// Combine both datasets by adding the contraceptive data to the GeoJSON file
+	geoData.features.forEach(feature => {
+    	const countryMatch = countryData.find(d => d.Code === feature.id);
+    	if (countryMatch) {
+      		feature.literacyrate = +countryMatch.LiteracyRate;
     	}
   	});
 
-  	const litrateChoroplethMap = new litrateChoroplethMap({ 
-    	parentElement: '#map'
+  	litrateChoroplethMap = new litrateChoroplethMap({ 
+    	parentElement: '#choroplethliteracyrates',
+		containerHeight: 500,
+		containerWidth: 500
   	}, geoData);
 })
 .catch(error => console.error('Error with litrate choropleth map:', error));

@@ -1,5 +1,4 @@
-class contraceptiveChoroplethMap {
-
+class ChoroplethContraceptives {
   /**
    * Class constructor with basic configuration
    * @param {Object}
@@ -8,12 +7,12 @@ class contraceptiveChoroplethMap {
   constructor(_config, _data) {
     this.config = {
       parentElement: _config.parentElement,
-      containerWidth: _config.containerWidth || 500,
-      containerHeight: _config.containerHeight || 400,
-      margin: _config.margin || {top: 0, right: 0, bottom: 0, left: 0},
+      containerWidth: _config.containerWidth || 900,
+      containerHeight: _config.containerHeight || 600,
+      margin: _config.margin || {top: 10, right: 10, bottom: 10, left: 10},
       tooltipPadding: 10,
-      legendBottom: 50,
-      legendLeft: 50,
+      legendBottom: 20,
+      legendLeft: 20,
       legendRectHeight: 12, 
       legendRectWidth: 150
     }
@@ -75,7 +74,7 @@ class contraceptiveChoroplethMap {
   updateVis() {
     let vis = this;
 
-    const contraceptiveDensityExtent = d3.extent(vis.data.objects.collection.geometries, d => d.properties.contraceptiveprevalence);
+    const contraceptiveDensityExtent = d3.extent(vis.data.features.filter(d => d.properties.contraceptiveprevalence != null), d => d.properties.contraceptiveprevalence);
     
     // Update color scale
     vis.colorScale.domain(contraceptiveDensityExtent);
@@ -93,8 +92,8 @@ class contraceptiveChoroplethMap {
   renderVis() {
     let vis = this;
 
-    // Convert compressed TopoJSON to GeoJSON format
-    const countries = topojson.feature(vis.data, vis.data.objects.collection)
+    // Use GeoJSON directly (no TopoJSON conversion needed)
+    const countries = vis.data;
 
     // Defines the scale of the projection so that the geometry fits within the SVG area
     vis.projection.fitSize([vis.width, vis.height], countries);
@@ -106,22 +105,22 @@ class contraceptiveChoroplethMap {
         .attr('class', 'country')
         .attr('d', vis.geoPath)
         .attr('fill', d => {
-          if (d.properties.contraceptiveprevalence) {
-            return vis.colorScale(d.properties.contraceptiveprevalence);
+          if (d.contraceptiveprevalence) {
+            return vis.colorScale(d.contraceptiveprevalence);
           } else {
-            return 'url(#lightstripe)';
+            return '#e0e0e0';
           }
         });
 
     countryPath
         .on('mousemove', (event,d) => {
-          const contraPrevalence = d.properties.contraceptiveprevalence ? `<strong>${d.properties.contraceptiveprevalence}</strong> contraceptive prevalence density per nation` : 'No data available'; 
+          const contraPrevalence = d.contraceptiveprevalence ? `<strong>${d.contraceptiveprevalence}</strong> contraceptive prevalence` : 'No data available'; 
           d3.select('#tooltip')
             .style('display', 'block')
             .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
             .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
             .html(`
-              <div class="tooltip-title">${d.properties.name}</div>
+              <div class="tooltip-title">${d.id}</div>
               <div>${contraPrevalence}</div>
             `);
         })
