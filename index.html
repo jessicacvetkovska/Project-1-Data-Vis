@@ -23,16 +23,24 @@
         <div class="scatterplot-container">
             <svg id="scatterplot"></svg>
         </div>
+
+        <div class="choropleth-maps">
+            <svg id="choroplethcontraceptives"></svg>
+            <svg id="choroplethliteracyrates"></svg>
+        </div>
         
         <div id="tooltip"></div>
     
-        <!-- D3 bundle -->
+        <!-- D3 bundle and Topojson -->
         <script src="js/d3.v6.min.js"></script>
+        <script src="js/topojson.v3.js"></script>
 
         <!-- Our JS code - INCLUDING the new files-->
         <script src="js/histogramcontraceptives.js"></script>
         <script src="js/histogramliteracyrates.js"></script>
         <script src="js/scatterplot.js"></script>
+        <script src="js/choroplethcontraceptives.js"></script>
+        <script src="js/choroplethliteracyrates.js"></script>
         <script src="js/main.js"></script>
     </body>
 </html>

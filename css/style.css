@@ -21,6 +21,10 @@ svg {
   margin: 20px 0;
 }
 
+.country:hover {
+  stroke: #333;
+}
+
 /* Tooltip */
 #tooltip {
   position: absolute;

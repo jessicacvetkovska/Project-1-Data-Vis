@@ -1,6 +1,7 @@
 console.log("Hello world");
 let data_contraceptive, data_literacyrate;
 
+// for the contraceptive histogram
 const contraceptivePromise = d3.csv('data/contraceptiveprevalence.csv')
   .then(_data => {
   	console.log('Data loading of contraceptive prevalence complete. Work with dataset.');
@@ -33,6 +34,7 @@ const contraceptivePromise = d3.csv('data/contraceptiveprevalence.csv')
     console.log(error);
 });
 
+// for the literacy rates histogram
 const literacyPromise = d3.csv('data/literacyrates.csv')
   .then(_data => {
   	console.log('Data loading of literacy rates complete. Work with dataset.');
@@ -65,7 +67,7 @@ const literacyPromise = d3.csv('data/literacyrates.csv')
     console.log(error);
 });
 
-
+// for the scatterplot
 Promise.all([contraceptivePromise, literacyPromise])
   .then(([contraceptiveFilteredData, litrateFilteredData]) => {
     // Combine datasets for scatterplot
@@ -87,7 +89,53 @@ Promise.all([contraceptivePromise, literacyPromise])
       'containerHeight': 500,
       'containerWidth': 500
     }, combinedData);
+
+	return contraceptiveFilteredData, litrateFilteredData;
   })
   .catch(error => {
     console.error('Error combining datasets:', error);
   });
+
+Promise.all([
+	d3.json('data/world.geojson'),
+	contraceptivePromise
+]).then(data => {
+	const geoData = data[0];
+	const countryData = contraceptiveFilteredData;
+
+	// Combine both datasets by adding the contraceptive data to the GeoJSON file
+	geoData.objects.collection.geometries.forEach(d => {
+    	for (let i = 0; i < countryData.length; i++) {
+      		if (d.properties.id == countryData[i].Code) {
+        		d.properties.contraceptiveprevalence = +countryData[i].Prevalence;
+      		}
+    	}
+  	});
+
+  	const contraceptiveChoroplethMap = new contraceptiveChoroplethMap({ 
+    	parentElement: '#map'
+  	}, geoData);
+})
+.catch(error => console.error('Error with contraceptive choropleth map:', error));
+
+Promise.all([
+	d3.json('data/world.geojson'),
+	literacyPromise
+]).then(data => {
+	const geoData = data[0];
+	const countryData = litrateFilteredData;
+
+	// Combine both datasets by adding the population density to the TopoJSON file
+	geoData.objects.collection.geometries.forEach(d => {
+    	for (let i = 0; i < countryData.length; i++) {
+      		if (d.properties.id == countryData[i].code) {
+        		d.properties.literacyrate = +countryData[i].LiteracyRate;
+      		}
+    	}
+  	});
+
+  	const litrateChoroplethMap = new litrateChoroplethMap({ 
+    	parentElement: '#map'
+  	}, geoData);
+})
+.catch(error => console.error('Error with litrate choropleth map:', error));
