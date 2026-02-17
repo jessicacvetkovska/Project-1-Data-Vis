@@ -122,13 +122,14 @@ Promise.all([
     	const countryMatch = countryData.find(d => d.Code === feature.id);
     	if (countryMatch) {
       		feature.contraceptiveprevalence = +countryMatch.Prevalence;
+			feature.contraceptiveyear = +countryMatch.Year;
     	}
   	});
 
   	choroplethcontraceptives = new ChoroplethContraceptives({ 
     	parentElement: '#choroplethcontraceptives',
-		containerHeight: 500,
-		containerWidth: 500
+		containerHeight: 600,
+		containerWidth: 900
   	}, geoData);
 })
 .catch(error => console.error('Error with contraceptive choropleth map:', error));
@@ -158,13 +159,14 @@ Promise.all([
     	const countryMatch = countryData.find(d => d.Code === feature.id);
     	if (countryMatch) {
       		feature.literacyrate = +countryMatch.LiteracyRate;
+			feature.literacyyear = +countryMatch.Year;
     	}
   	});
 
-  	litrateChoroplethMap = new litrateChoroplethMap({ 
+  	choroplethliteracyrates = new ChoroplethLiteracyRates({ 
     	parentElement: '#choroplethliteracyrates',
-		containerHeight: 500,
-		containerWidth: 500
+		containerHeight: 600,
+		containerWidth: 900
   	}, geoData);
 })
 .catch(error => console.error('Error with litrate choropleth map:', error));

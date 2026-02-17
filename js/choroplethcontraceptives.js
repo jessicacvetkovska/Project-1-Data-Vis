@@ -9,7 +9,7 @@ class ChoroplethContraceptives {
       parentElement: _config.parentElement,
       containerWidth: _config.containerWidth || 900,
       containerHeight: _config.containerHeight || 600,
-      margin: _config.margin || {top: 10, right: 10, bottom: 10, left: 10},
+      margin: _config.margin || {top: 40, right: 10, bottom: 10, left: 10},
       tooltipPadding: 10,
       legendBottom: 20,
       legendLeft: 20,
@@ -40,6 +40,15 @@ class ChoroplethContraceptives {
     vis.chart = vis.svg.append('g')
         .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
 
+    // Title for the choropleth
+    vis.chart.append("text")
+      .attr("x", (vis.width / 2))
+      .attr("y", 0 - (vis.config.margin.top / 2))
+      .attr("text-anchor", "middle")
+      .style("font-size", "16px")
+      .style("text-decoration", "underline")
+      .text("Contraceptive Prevalence (Most Recent Year)");
+
     // Initialize projection and path generator
     vis.projection = d3.geoMercator();
     vis.geoPath = d3.geoPath().projection(vis.projection);
@@ -53,10 +62,10 @@ class ChoroplethContraceptives {
     vis.linearGradient = vis.svg.append('defs').append('linearGradient')
         .attr("id", "legend-gradient");
 
-    // Append legend
+    // Append legend (bottom-left, slightly raised to avoid Antarctica overlap)
     vis.legend = vis.chart.append('g')
-        .attr('class', 'legend')
-        .attr('transform', `translate(${vis.config.legendLeft},${vis.height - vis.config.legendBottom})`);
+      .attr('class', 'legend')
+      .attr('transform', `translate(${vis.config.legendLeft},${vis.height - vis.config.legendBottom - 100})`);
     
     vis.legendRect = vis.legend.append('rect')
         .attr('width', vis.config.legendRectWidth)
@@ -66,7 +75,7 @@ class ChoroplethContraceptives {
         .attr('class', 'legend-title')
         .attr('dy', '.35em')
         .attr('y', -10)
-        .text('Contraceptive prevalence in the world')
+        .text('Contraceptive Prevalence (%)')
 
     vis.updateVis();
   }
@@ -74,7 +83,7 @@ class ChoroplethContraceptives {
   updateVis() {
     let vis = this;
 
-    const contraceptiveDensityExtent = d3.extent(vis.data.features.filter(d => d.properties.contraceptiveprevalence != null), d => d.properties.contraceptiveprevalence);
+    const contraceptiveDensityExtent = d3.extent(vis.data.features.filter(d => d.contraceptiveprevalence != null), d => d.contraceptiveprevalence);
     
     // Update color scale
     vis.colorScale.domain(contraceptiveDensityExtent);
@@ -95,8 +104,11 @@ class ChoroplethContraceptives {
     // Use GeoJSON directly (no TopoJSON conversion needed)
     const countries = vis.data;
 
-    // Defines the scale of the projection so that the geometry fits within the SVG area
-    vis.projection.fitSize([vis.width, vis.height], countries);
+    // Fit the projection to the entire world bounds
+    vis.projection.fitSize([vis.width, vis.height], {
+      type: "FeatureCollection",
+      features: countries.features
+    });
 
     // Append world map
     const countryPath = vis.chart.selectAll('.country')
@@ -114,14 +126,15 @@ class ChoroplethContraceptives {
 
     countryPath
         .on('mousemove', (event,d) => {
-          const contraPrevalence = d.contraceptiveprevalence ? `<strong>${d.contraceptiveprevalence}</strong> contraceptive prevalence` : 'No data available'; 
+          const contraPrevalence = d.contraceptiveprevalence ? `<strong>${d.contraceptiveprevalence}%</strong> contraceptive prevalence` : 'No data available'; 
           d3.select('#tooltip')
             .style('display', 'block')
             .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
             .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
             .html(`
-              <div class="tooltip-title">${d.id}</div>
+              <div class="tooltip-title">${d.properties.name}</div>
               <div>${contraPrevalence}</div>
+              <div>Most Recent Year: ${d.contraceptiveyear}</div>
             `);
         })
         .on('mouseleave', () => {

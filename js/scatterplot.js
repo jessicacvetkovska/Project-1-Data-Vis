@@ -67,7 +67,7 @@ class Scatterplot {
             .attr("text-anchor", "middle")
             .attr("x", vis.width / 2)
             .attr("y", vis.height + vis.config.margin.bottom / 2 + 15)
-            .text("Frequency of Contraceptive Prevalence (%)");
+            .text("Contraceptive Prevalence (%)");
 
         // Y axis label:
         vis.chart.append("text")
